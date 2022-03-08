@@ -6,13 +6,19 @@ University of Tartu
 --------------------------------------------
 
 <h3 style="display: flex; font-weight: bold;">
-Group Iron Man <img src="https://i.pinimg.com/originals/d6/71/b5/d671b57652d6a30ab9415a97de50b1fa.jpg" alt="Group Iron Man" style="width: 30px; align-self: center;">
+Group Iron Man <img src="web/static/logo.png" alt="Group Iron Man" style="height: 24px; align-self: center;">
 </h3>
 
 * Eduardo Brito
 * Elizaveta Nikolaeva
-* Dariya
+* Dariya Nagashibayeva
 * Ziya Mammadov
+
+--------------------------------------------
+
+### Deployment
+
+[It's Here! 🤩💪](https://hide-and-seek.vercel.app/)
 
 --------------------------------------------
 
