@@ -83,4 +83,4 @@
 	/>
 </svelte:head>
 
-<div id="map" class="w-screen h-screen" />
+<div id="map" class="w-screen" style="height: 95vh;" />

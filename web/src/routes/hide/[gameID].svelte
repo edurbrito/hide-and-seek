@@ -38,7 +38,6 @@
 				db.get($page.params.gameID)
 					.get('coordinates')
 					.on((data, id) => {
-						console.log(data);
 						
 						seekerCoords = JSON.parse(data);
 

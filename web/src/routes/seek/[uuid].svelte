@@ -16,6 +16,7 @@
 		latitude: 0,
 		longitude: 0
 	};
+	var timer = "30";
 
 	const options = {
 		enableHighAccuracy: true,
@@ -131,6 +132,19 @@
 					);
 				}, 30000);
 
+				setInterval(() => {
+					let _timer = parseInt(timer) - 1
+					if (_timer <= 0) {
+						_timer = 30
+					}
+
+					if (_timer < 10) {
+						timer = `0${_timer}`
+					} else {
+						timer = `${_timer}`
+					}
+				}, 1000)
+
 				let shareUrl = `${$page.url.host}/hide/${gameID}`;
 				let shareText = `Join my Hide and Seek game session! I am calling for the best hiders in town!`;
 
@@ -206,7 +220,7 @@
 			class="w-full h-fit absolute bottom-0 flex flex-row text-white p-2 bg-primary"
 			style="z-index: 10000000;"
 		>
-			<div class="w-1/2 items-center text-center">
+			<div class="w-full items-center text-center">
 				<span class="text-sm font-bold">Game ID:</span>
 				<span
 					class="text-sm"
@@ -215,9 +229,13 @@
 					}}>{gameID}</span
 				>
 			</div>
-			<div class="w-1/2 items-center text-center">
+			<div class="w-full items-center text-center">
 				<span class="text-sm font-bold">Found:</span>
 				<span class="text-sm">{nfound}/{Object.keys(hiders).length}</span>
+			</div>
+			<div class="w-auto items-center text-center justify-center flex flex-col pr-1">
+				<img src="/map/refresh.png" style="width: auto; height: 80%;" class="absolute" alt="refresh" />
+				<span class="font-base" style="font-size: 0.75em;">{timer}</span>
 			</div>
 		</div>
 	</div>
