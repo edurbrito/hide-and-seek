@@ -38,12 +38,12 @@
 
 		var hiderIcon = L.icon({
 			iconUrl: '/map/hider.png',
-			shadowUrl: '/map/shadow.png',
+			// shadowUrl: '/map/shadow.png',
 			iconSize: [32, 32], // size of the icon
-			shadowSize:   [32, 32], // size of the shadow
-			iconAnchor:   [0, -16], // point of the icon which will correspond to marker's location
-    		shadowAnchor: [-8, -16],  // the same for the shadow
-			popupAnchor: [0, -18] // point from which the popup should open relative to the iconAnchor
+			// shadowSize:   [32, 32], // size of the shadow
+			iconAnchor:   [16, 32], // point of the icon which will correspond to marker's location
+    		// shadowAnchor: [8, 32],  // the same for the shadow
+			popupAnchor: [0, -32] // point from which the popup should open relative to the iconAnchor
 		});
 
 		for (const hider in hiders) {
@@ -68,7 +68,7 @@
 		}
 
 		let marker = L.marker([currentPosition.latitude, currentPosition.longitude],
-		{icon: seekerIcon}
+		// {icon: seekerIcon}
 		 ).addTo(map);
 		marker.bindPopup('This is You!');
 	});
@@ -83,4 +83,4 @@
 	/>
 </svelte:head>
 
-<div id="map" class="h-screen z-0" />
+<div id="map" class="w-screen h-screen" />

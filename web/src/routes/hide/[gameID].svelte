@@ -5,6 +5,7 @@
 	import faker from '@faker-js/faker';
 	import { distance, randInt, sha256 } from '../../utils';
 
+	var username;
 	var distanceToSeeker = 'some';
 	var seekerCoords = { latitude: 0, longitude: 0 };
 	var found = false;
@@ -14,9 +15,9 @@
 		if ('geolocation' in navigator) {
 			const db = GUN({ peers: ['https://hideseekgun.herokuapp.com/gun'] });
 
-			found = localStorage.getItem($page.params.gameID + "_found") != null;
+			found = localStorage.getItem($page.params.gameID + '_found') != null;
 
-			var username, user, watchID;
+			var user, watchID;
 			const options = {
 				enableHighAccuracy: true,
 				maximumAge: 60000,
@@ -24,15 +25,30 @@
 			};
 
 			(async () => {
-				username = localStorage.getItem($page.params.gameID + "_username");
+				username = localStorage.getItem($page.params.gameID + '_username');
 				if (!username) {
 					username =
 						faker.name.firstName().toLowerCase() +
 						`-${(await sha256($page.params.gameID)).slice(0, 4).toUpperCase()}${randInt(10, 99)}`;
-					localStorage.setItem($page.params.gameID + "_username", username);
+					localStorage.setItem($page.params.gameID + '_username', username);
 				}
 
 				user = db.get(username);
+
+				db.get($page.params.gameID)
+					.get('coordinates')
+					.on((data, id) => {
+						console.log(data);
+						
+						seekerCoords = JSON.parse(data);
+
+						let dst = Math.round(distance(seekerCoords, coords));
+						distanceToSeeker = '' + dst;
+						if (dst <= 50) {
+							found = true;
+							localStorage.setItem($page.params.gameID + '_found', 'true');
+						}
+					});
 
 				watchID = navigator.geolocation.watchPosition(
 					(position) => {
@@ -52,33 +68,37 @@
 						distanceToSeeker = '' + dst;
 						if (dst <= 50) {
 							found = true;
-							localStorage.setItem($page.params.gameID + "_found", "true")
+							localStorage.setItem($page.params.gameID + '_found', 'true');
 						}
 					},
-					null,
+					function (error) {
+						switch (error.code) {
+							case error.PERMISSION_DENIED:
+								console.log('Denied request for Geolocation.');
+								break;
+							case error.POSITION_UNAVAILABLE:
+								console.log('Location unavailable.');
+								break;
+							case error.TIMEOUT:
+								console.log('Location request timed out.');
+								break;
+							case error.UNKNOWN_ERROR:
+								console.log('An unknown error occurred.');
+								break;
+						}
+						document.getElementById('warning').style.setProperty('display', 'flex');
+					},
 					options
 				);
-
-				db.get($page.params.gameID)
-					.get('coordinates')
-					.on((data, id) => {						
-						seekerCoords = JSON.parse(data);
-
-						let dst = Math.round(distance(seekerCoords, coords));
-						distanceToSeeker = '' + dst;
-						if (dst <= 50) {
-							found = true;
-							localStorage.setItem($page.params.gameID + "_found", "true")
-						}
-					});
 			})();
 		} else {
-			console.log('Hey');
+			document.getElementById('warning').style.setProperty('display', 'flex');
 		}
 	});
 </script>
 
 <div class="w-full h-full flex flex-col justify-center items-center">
+	<span class="text-sm font-bold text-white pb-2">{username}</span>
 	<div class="w-40 h-40 rounded-full bg-white flex flex-col items-center justify-center text-white">
 		<div
 			class="w-36 h-36 rounded-full bg-primary flex flex-col items-center justify-center text-white text-2xl font-bold"

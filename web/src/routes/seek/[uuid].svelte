@@ -33,7 +33,7 @@
 				gameID = (await sha256(uuid)).slice(0, 6).toUpperCase();
 
 				let username = faker.name.firstName().toLowerCase() + `#${randInt(1000, 9999)}`;
-					
+
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
 						currentPosition = {
@@ -61,27 +61,30 @@
 								console.log('Default case.');
 								break;
 						}
-					}, 
+						document.getElementById('warning').style.setProperty('display', 'flex');
+					},
 					options
 				);
 
-				db.get(gameID).put({ seeker: username, coordinates: '' });
+				db.get(gameID).put({ seeker: username, coordinates: JSON.stringify(currentPosition) });
 
-				db.get(gameID)
-					.get('hiders')
-					.map()
-					.on((data, id) => {
-						if (data) {
-							if (
-								distance(JSON.parse(data.coordinates), currentPosition) <= 50 ||
-								found.has(data.username)
-							) {
-								found.add(data.username);
-								data.found = true;
+				setInterval(() => {
+					db.get(gameID)
+						.get('hiders')
+						.map()
+						.once((data, id) => {
+							if (data) {
+								if (
+									distance(JSON.parse(data.coordinates), currentPosition) <= 50 ||
+									found.has(data.username)
+								) {
+									found.add(data.username);
+									data.found = true;
+								}
+								hiders[data.username] = data;
 							}
-							hiders[data.username] = data;
-						}
-					});
+						});
+				}, 3000);
 
 				watchID = navigator.geolocation.watchPosition(
 					(position) => {
@@ -123,6 +126,7 @@
 								console.log('An unknown error occurred.');
 								break;
 						}
+						document.getElementById('warning').style.setProperty('display', 'flex');
 					},
 					options
 				);
@@ -154,7 +158,7 @@
 					.setAttribute('href', `whatsapp://send?text=${shareText} ${shareUrl}`);
 			})();
 		} else {
-			console.log('Hey');
+			document.getElementById('warning').style.setProperty('display', 'flex');
 		}
 	});
 
@@ -190,17 +194,26 @@
 	}
 
 	function copyToClipBoard(text) {
-		navigator.clipboard.writeText(text)
+		navigator.clipboard.writeText(text);
 	}
 </script>
 
 <div class="scrollport w-screen h-screen">
-	<div class="child h-full w-full flex flex-shrink-0 flex-col bg-primary">
+	<div class="child h-full w-full relative flex flex-shrink-0 flex-col bg-primary">
 		<Map {hiders} {currentPosition} />
-		<div id="navbar" class="w-full h-fit flex flex-row text-white rounded p-2">
+		<div
+			id="navbar"
+			class="w-full h-fit absolute bottom-0 flex flex-row text-white p-2 bg-primary"
+			style="z-index: 10000000;"
+		>
 			<div class="w-1/2 items-center text-center">
 				<span class="text-sm font-bold">Game ID:</span>
-				<span class="text-sm" on:click={() => {copyToClipBoard(gameID)}}>{gameID}</span>
+				<span
+					class="text-sm"
+					on:click={() => {
+						copyToClipBoard(gameID);
+					}}>{gameID}</span
+				>
 			</div>
 			<div class="w-1/2 items-center text-center">
 				<span class="text-sm font-bold">Found:</span>
@@ -246,7 +259,12 @@
 				<img src="/social/whatsapp.png" alt="Whatsapp" class="w-6" />
 			</a>
 
-			<button on:click={() => {copyToClipBoard(`${$page.url.host}/hide/${gameID}`)}} class="share-btn">
+			<button
+				on:click={() => {
+					copyToClipBoard(`${$page.url.host}/hide/${gameID}`);
+				}}
+				class="share-btn"
+			>
 				<img src="/social/link.png" alt="Copy Link" class="w-6" />
 			</button>
 		</div>
