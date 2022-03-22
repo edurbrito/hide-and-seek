@@ -7,7 +7,7 @@
 	}
 </script>
 
-<form class="flex flex-col items-center justify-center w-full h-full align-middle gap-2 p-4">
+<div class="flex flex-col items-center justify-center w-full h-full align-middle gap-2 p-4">
 	<h1 class="font-bold w-fit text-4xl uppercase text-white mb-4">Hide & Seek</h1>
 	<input
 		type="text"
@@ -24,4 +24,4 @@
 		type="button"
 		on:click={redirect}>Join Game
 	</button>
-</form>
+</div>
