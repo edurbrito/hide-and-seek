@@ -84,52 +84,52 @@
 								hiders[data.username] = data;
 							}
 						});
-				}, 3000);
 
-				watchID = navigator.geolocation.watchPosition(
-					(position) => {
-						currentPosition = {
-							latitude: position.coords.latitude,
-							longitude: position.coords.longitude
-						};
-						console.log('watch current position', currentPosition);
+					navigator.geolocation.getCurrentPosition(
+						(position) => {
+							currentPosition = {
+								latitude: position.coords.latitude,
+								longitude: position.coords.longitude
+							};
+							console.log('watch current position', currentPosition);
 
-						db.get(gameID).put({
-							seeker: username,
-							coordinates: JSON.stringify(currentPosition)
-						});
+							db.get(gameID).put({
+								seeker: username,
+								coordinates: JSON.stringify(currentPosition)
+							});
 
-						for (const hider in hiders) {
-							if (Object.prototype.hasOwnProperty.call(hiders, hider)) {
-								if (
-									distance(JSON.parse(hiders[hider].coordinates), currentPosition) <= 50 ||
-									found.has(hider)
-								) {
-									found.add(hider);
-									hiders[hider].found = true;
+							for (const hider in hiders) {
+								if (Object.prototype.hasOwnProperty.call(hiders, hider)) {
+									if (
+										distance(JSON.parse(hiders[hider].coordinates), currentPosition) <= 50 ||
+										found.has(hider)
+									) {
+										found.add(hider);
+										hiders[hider].found = true;
+									}
 								}
 							}
-						}
-					},
-					function (error) {
-						switch (error.code) {
-							case error.PERMISSION_DENIED:
-								console.log('Denied request for Geolocation.');
-								break;
-							case error.POSITION_UNAVAILABLE:
-								console.log('Location unavailable.');
-								break;
-							case error.TIMEOUT:
-								console.log('Location request timed out.');
-								break;
-							case error.UNKNOWN_ERROR:
-								console.log('An unknown error occurred.');
-								break;
-						}
-						document.getElementById('warning').style.setProperty('display', 'flex');
-					},
-					options
-				);
+						},
+						function (error) {
+							switch (error.code) {
+								case error.PERMISSION_DENIED:
+									console.log('Denied request for Geolocation.');
+									break;
+								case error.POSITION_UNAVAILABLE:
+									console.log('Location unavailable.');
+									break;
+								case error.TIMEOUT:
+									console.log('Location request timed out.');
+									break;
+								case error.UNKNOWN_ERROR:
+									console.log('An unknown error occurred.');
+									break;
+							}
+							document.getElementById('warning').style.setProperty('display', 'flex');
+						},
+						options
+					);
+				}, 30000);
 
 				let shareUrl = `${$page.url.host}/hide/${gameID}`;
 				let shareText = `Join my Hide and Seek game session! I am calling for the best hiders in town!`;
