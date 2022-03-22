@@ -25,7 +25,7 @@
 
 	onMount(() => {
 		if ('geolocation' in navigator) {
-			const db = GUN({ peers: ['http://localhost:8765/gun'] });
+			const db = GUN({ peers: ['https://hideseekgun.herokuapp.com/gun'] });
 
 			table = document.querySelector('#hiders');
 
