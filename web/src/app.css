@@ -1,3 +1,70 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scrollport {
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	scroll-snap-type: y mandatory;
+	scroll-behavior: smooth;
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.scrollport::-webkit-scrollbar {
+	display: none;
+}
+
+.child {
+	scroll-snap-align: start;
+}
+
+.bg-primary {
+	background-color: #0ebdc2;
+}
+
+.bg-secondary {
+	background-color: #314755;
+}
+
+.bg-other {
+	background-color: #b0b0b0;
+}
+
+.text-primary {
+	color: #0ebdc2;
+}
+
+.text-secondary {
+	color: #314755;
+}
+
+.text-other {
+	color: #b0b0b0;
+}
+
+.table-border {
+	border-bottom-width: 1px;
+}
+
+.share-btn {
+	display: inline-block;
+	color: #ffffff;
+	border: none;
+	padding: 0.1em 0.3em;
+	outline: none;
+	text-align: center;
+	font-size: 0.9em;
+	margin: 0 0.2em;
+}
+
+.share-btn:focus,
+.share-btn:hover {
+	text-decoration: none;
+	opacity: 0.8;
+}
+
+.share-btn:active {
+	color: #e2e2e2;
+}
