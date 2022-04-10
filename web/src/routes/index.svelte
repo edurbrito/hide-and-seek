@@ -1,4 +1,7 @@
-<span class="p-10 flex flex-col">
-	<h1 class="font-bold underline">Welcome to SvelteKit</h1>
-	<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-</span>
+<div>
+	<h1 class="title">Hide & Seek</h1>
+	<div class="mt-5 flex actions-container">
+		<a href="/hide" class="link bg-secondary other-text" type="button">Hide</a>
+		<button class="button bg-secondary other-text" type="button">Seek</button>
+	</div>
+</div>

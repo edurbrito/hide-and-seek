@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+	color: #ffffff;
+}
+
 .scrollport {
 	overflow: auto;
 	display: flex;
@@ -32,16 +36,59 @@
 	background-color: #b0b0b0;
 }
 
-.text-primary {
-	color: #0ebdc2;
+.title {
+	text-transform: uppercase;
+	font-size: 40px;
+	font-weight: 500;
 }
 
-.text-secondary {
-	color: #314755;
+.other-text {
+	font-size: 24px;
+	font-weight: 500;
 }
 
-.text-other {
-	color: #b0b0b0;
+.link,
+.button {
+	display: inline-block;
+	text-align: center;
+	border-radius: 5px;
+	padding: 10px 20px;
+	width: 100%;
+}
+
+.link:active,
+.button:active {
+	opacity: 0.8;
+}
+
+.button:disabled {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+.game-circle {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 200px;
+	height: 200px;
+	align-items: center;
+	border: 8px solid #ffffff;
+	border-radius: 50%;
+}
+
+.input {
+	display: block;
+	border-radius: 5px;
+	padding: 10px 10px;
+	margin-bottom: 10px;
+	width: 100%;
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.actions-container button:not(:first-child) {
+	margin-left: 6px;
 }
 
 .table-border {
