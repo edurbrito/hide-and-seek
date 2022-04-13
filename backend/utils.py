@@ -1,28 +1,35 @@
-from operator import ne
 import random
 from math import pi, cos, sin, atan2, sqrt
+from hashlib import sha256
+from faker import Faker
 
-
+fake = Faker(['en_US'])
 EARTH_RADIUS = 6371000
 RANGE = (10, 300)
 RAD = pi / 180
 DEG = 180 / pi
 
 
+def random_username(game_id):
+    return str(fake['en-US'].first_name()).lower() + f"-{sha256(game_id.encode()).hexdigest()[:4].upper()}{random.randint(10, 99)}"
+
+
 def calculate_circle_center(position):
     latitude = float(position[0])
     longitude = float(position[1])
     dx = random.randint(RANGE[0], RANGE[1])
-    dy = random.random(RANGE[0], RANGE[1])
+    dy = random.randint(RANGE[0], RANGE[1])
     new_latitude = latitude + (dy / EARTH_RADIUS) * DEG
-    new_longitude = longitude + (dx / EARTH_RADIUS) * DEG / cos(longitude * RAD)
+    new_longitude = longitude + \
+        (dx / EARTH_RADIUS) * DEG / cos(longitude * RAD)
 
     return new_latitude, new_longitude
+
 
 def calculate_distance(position1, position2):
     latitude1 = float(position1[0])
     longitude1 = float(position1[1])
-    latitude2 =float(position2[0])
+    latitude2 = float(position2[0])
     longitude2 = float(position2[1])
 
     phi1 = latitude1 * RAD
