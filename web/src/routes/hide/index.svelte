@@ -1,9 +1,13 @@
 <script>
+	const BACKEND = import.meta.env.VITE_BACKEND
+		? import.meta.env.VITE_BACKEND
+		: 'http://localhost:5000';
+
 	let gameid = '';
 
 	const handleSubmitButtonClick = async (event) => {
 		event.preventDefault();
-		await fetch(`http://localhost:5000/hide/${gameid}`, { method: 'POST' })
+		await fetch(`${BACKEND}/hide/${gameid}`, { method: 'POST' })
 			.then((response) => response.json())
 			.then((hider) => {
 				localStorage.setItem('hider', JSON.stringify(hider));

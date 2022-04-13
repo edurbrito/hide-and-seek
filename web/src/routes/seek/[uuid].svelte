@@ -3,6 +3,10 @@
 	import { page } from '$app/stores';
 	import Map from './map.svelte';
 
+	const BACKEND = import.meta.env.VITE_BACKEND
+		? import.meta.env.VITE_BACKEND
+		: 'http://localhost:5000';
+
 	const uuid = $page.params.uuid;
 	var game;
 	var table;
@@ -76,7 +80,9 @@
 						console.log('watch current position', currentPosition);
 
 						await fetch(
-							`http://localhost:5000/seek/${uuid}?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}`,
+							`${BACKEND}/seek/${uuid}?latitude=${
+								currentPosition.latitude
+							}&longitude=${currentPosition.longitude}`,
 							{ method: 'POST' }
 						)
 							.then((response) => response.json())

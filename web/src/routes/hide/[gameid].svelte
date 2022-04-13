@@ -2,6 +2,10 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
+	const BACKEND = import.meta.env.VITE_BACKEND
+		? import.meta.env.VITE_BACKEND
+		: 'http://localhost:5000';
+
 	const game_id = $page.params.gameid;
 	let hider;
 	let username = '';
@@ -21,7 +25,7 @@
 	onMount(async () => {
 		hider = JSON.parse(localStorage.getItem('hider'));
 		if (hider == null || !hider) {
-			await fetch(`http://localhost:5000/hide/${game_id}`, { method: 'POST' })
+			await fetch(`${BACKEND}/hide/${game_id}`, { method: 'POST' })
 				.then((response) => response.json())
 				.then((response) => {
 					localStorage.setItem('hider', JSON.stringify(response));
@@ -47,7 +51,7 @@
 					};
 
 					await fetch(
-						`http://localhost:5000/hider/${game_id}?uuid=${hider.uuid}&latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}`,
+						`${BACKEND}/hider/${game_id}?uuid=${hider.uuid}&latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}`,
 						{ method: 'POST' }
 					)
 						.then((response) => response.json())

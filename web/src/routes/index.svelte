@@ -1,6 +1,10 @@
 <script lang="ts">
+	const BACKEND = import.meta.env.VITE_BACKEND
+		? import.meta.env.VITE_BACKEND
+		: 'http://localhost:5000';
+
 	async function seek() {
-		await fetch(`http://localhost:5000/seek`, { method: 'POST' })
+		await fetch(`${BACKEND}/seek`, { method: 'POST' })
 			.then((response) => response.json())
 			.then((game) => {
 				localStorage.setItem('game', JSON.stringify(game));
