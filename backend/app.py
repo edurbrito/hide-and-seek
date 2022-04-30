@@ -3,9 +3,12 @@ from flask_cors import CORS
 from uuid import uuid4
 from hashlib import sha256
 from utils import random_username, calculate_circle_center, calculate_distance
+from pymongo import MongoClient
 
 app = Flask("backend")
 CORS(app)
+MONGO_CLIENT = MongoClient()
+DB = MONGO_CLIENT.hide_and_seek
 
 DISTANCE_THRESHOLD = 50
 database = {}
@@ -27,7 +30,7 @@ def create_game():
         uuid = str(uuid4())
         game_id = sha256(uuid.encode()).hexdigest()[:6].lower()
 
-        while game_id in database:
+        while DB.game.find_one(game_id):
             uuid = str(uuid4())
             game_id = sha256(uuid.encode()).hexdigest()[:6].lower()
 
@@ -39,7 +42,8 @@ def create_game():
             "hiders": {}
         }
 
-        database[game_id] = response
+        query = {**response, **{"_id": game_id}}
+        DB.game.insert_one(query)
         return make_response(jsonify(response), 200)
 
 
@@ -48,9 +52,7 @@ def seek(uuid):
     if request.method == "POST":
         game_id = sha256(uuid.encode()).hexdigest()[:6].lower()
 
-        if game_id in database:
-            game = database[game_id]
-
+        if game := DB.game.find_one(game_id):
             latitude = float(request.args.get("latitude", 0))
             longitude = float(request.args.get("longitude", 0))
 
@@ -80,7 +82,7 @@ def seek(uuid):
                     response["hiders"][hider]["latitude"] = circle_center[0]
                     response["hiders"][hider]["longitude"] = circle_center[1]
 
-            database[game_id] = game
+            DB.game.find_one_and_replace({"_id": game_id}, game)
             return make_response(jsonify(response), 200)
         else:
             response = {
@@ -93,17 +95,18 @@ def seek(uuid):
 def create_hider(game_id):
     if request.method == "POST":
         game_id = game_id.lower()
-        if game_id in database:
+        if DB.game.find_one(game_id):
             uuid = str(uuid4())
 
             hider_username = random_username(game_id)
 
-            database[game_id]["hiders"][uuid] = {
+            data = {
                 "username": hider_username,
                 "found": False,
                 "latitude": 0,
                 "longitude": 0
             }
+            DB.game.update_one({"_id": game_id}, { '$set': {f"hiders.{uuid}" : data}})
 
             response = {
                 "uuid": uuid,
@@ -121,8 +124,7 @@ def create_hider(game_id):
 def broadcast_hider_location(game_id):
     if request.method == "POST":
         game_id = game_id.lower()
-        if game_id in database:
-            game = database[game_id]
+        if game := DB.game.find_one(game_id):
             seeker_username = game["seeker"]
 
             hider = request.args.get("uuid", 0)
@@ -140,7 +142,7 @@ def broadcast_hider_location(game_id):
             if distance < DISTANCE_THRESHOLD:
                 game["hiders"][hider]["found"] = True
 
-            database[game_id] = game
+            DB.game.find_one_and_replace({"_id": game_id}, game)
 
             response = {
                 "username": seeker_username,
