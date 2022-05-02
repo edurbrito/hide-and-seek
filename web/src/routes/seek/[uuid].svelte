@@ -9,7 +9,8 @@
 
 	const uuid = $page.params.uuid;
 	var game;
-	var table;
+	var tableFound;
+	var tableMissing;
 	var currentPosition = {
 		latitude: 0,
 		longitude: 0
@@ -26,7 +27,8 @@
 		game = JSON.parse(localStorage.getItem('game'));
 
 		if ('geolocation' in navigator) {
-			table = document.querySelector('#hiders');
+			tableFound = document.querySelector('#hiders-container-found');
+			tableMissing = document.querySelector('#hiders-container-missing');
 
 			getCurrentPosition();
 			setInterval(getCurrentPosition, 30000);
@@ -80,9 +82,7 @@
 						console.log('watch current position', currentPosition);
 
 						await fetch(
-							`${BACKEND}/seek/${uuid}?latitude=${
-								currentPosition.latitude
-							}&longitude=${currentPosition.longitude}`,
+							`${BACKEND}/seek/${uuid}?latitude=${currentPosition.latitude}&longitude=${currentPosition.longitude}`,
 							{ method: 'POST' }
 						)
 							.then((response) => response.json())
@@ -118,25 +118,23 @@
 	function updateTable(game) {
 		if (!game) return;
 		let hiders = game.hiders;
-		let result = '';
+		let hidersFound = '';
+		let hidersMissing = '';
 		let found = 0;
 		for (const hider in hiders) {
 			if (Object.prototype.hasOwnProperty.call(hiders, hider)) {
 				found += hiders[hider].found;
-				let sfound = hiders[hider].found ? 'Yaaa 🤟' : 'Noo 👀';
-				let coordinates = hiders[hider].found
-					? `lat: ${hiders[hider].latitude}, lon: ${hiders[hider].longitude}`
-					: '';
-
-				result += `<tr class="bg-secondary table-border w-full flex flex-row">
-				<td class="table-border py-2 text-center text-xs w-1/3">${hiders[hider].username}</td>
-				<td class="table-border py-2 text-center text-xs w-1/3">${sfound}</td>
-				<td class="table-border py-2 text-center text-xs w-1/3">${coordinates}</td>
-				</tr>`;
+				let pill = `<div class="rounded-full bg-secondary text-white p-2 m-1 text-xs drop-shadow-md w-fit">${hiders[hider].username}</div>\n`
+				if (hiders[hider].found) {
+					hidersFound += pill
+				} else {
+					hidersMissing += pill
+				}
 			}
 		}
 
-		if (table) table.innerHTML = result;
+		if (tableFound) tableFound.innerHTML = hidersFound
+		if (tableMissing) tableMissing.innerHTML = hidersMissing
 
 		document.getElementById('found').innerHTML = `${found}/${Object.keys(game.hiders).length}`;
 		document.getElementById('game_id').innerHTML = game.game_id.toUpperCase();
@@ -147,11 +145,26 @@
 	}
 
 	$: updateTable(game);
+
+	let shown = false;
 </script>
 
 <div class="scrollport w-screen h-screen">
 	<div class="child h-full w-full relative flex flex-shrink-0 flex-col bg-primary">
 		<Map {game} {currentPosition} />
+
+		{#if shown}
+			<div
+				id="navbar"
+				class="w-fit h-fit absolute right-0 left-0 m-auto bottom-12 text-xs text-white p-2 bg-primary"
+				style="z-index: 10000002;"
+				on:click={() => {
+					shown = false;
+				}}
+			>
+				Copied to clipboard! Share it with your friends
+			</div>
+		{/if}
 		<div
 			id="navbar"
 			class="w-full h-fit absolute bottom-0 flex flex-row text-white p-2 bg-primary"
@@ -160,16 +173,23 @@
 			<div class="w-full items-center text-center">
 				<span class="text-sm font-bold">Game ID:</span>
 				<span
-					class="text-sm"
+					class="text-sm underline"
 					on:click={() => {
 						copyToClipBoard(game.game_id);
+						shown = true;
 					}}
 					id="game_id"
 				/>
 			</div>
-			<div class="w-full items-center text-center">
+			<div
+				class="w-full items-center text-center"
+				on:click={() => {
+					let toView = document.getElementById('hiders-section');
+					toView.scrollIntoView();
+				}}
+			>
 				<span class="text-sm font-bold">Found:</span>
-				<span class="text-sm" id="found">0/0</span>
+				<span class="text-sm underline" id="found">0/0</span>
 			</div>
 			<div class="w-auto items-center text-center justify-center flex flex-col pr-1">
 				<img
@@ -183,22 +203,17 @@
 		</div>
 	</div>
 	<div
-		class="child h-full w-full flex flex-shrink-0 sm:p-2 md:p-12 pt-24 flex-col items-center bg-primary text-white"
+		class="child h-full w-full flex flex-shrink-0 sm:p-2 md:p-12 pt-4 flex-col items-center bg-primary text-white"
+		id="hiders-section"
 	>
-		<h2 class="text-2xl text-white font-extrabold mb-2 md:mt-auto">HIDERS</h2>
-		<thead class="w-full h-fit text-sm bg-secondary border">
-			<tr class="text-white font-bold table-border w-full flex">
-				<th class="py-2 text-sm w-1/3">Nickname</th>
-				<th class="py-2 text-sm w-1/3">Found</th>
-				<th class="py-2 text-sm w-1/3">Coordinates</th>
-			</tr>
-		</thead>
-		<tbody
-			id="hiders"
-			class="bg-transparent overflow-y-scroll w-full border"
-			style="max-height: 240px;"
-		/>
-		<h3 class="text-xl text-white font-extrabold mt-auto">SHARE</h3>
+		<h2 class="text-2xl text-white font-extrabold mb-2 mt-auto">HIDERS<br><h3 class="text-base text-center">FOUND</h3></h2>
+		<div id="hiders-container-found" class="w-full flex justify-center flex-wrap overflow-y-scroll">
+		</div>
+		<hr class="w-10/12 m-4">
+		<h3 class="text-white font-extrabold mb-2 md:mt-auto text-base text-center mt-2">MISSING</h3>
+		<div id="hiders-container-missing" class="w-full flex justify-center flex-wrap overflow-y-scroll">
+		</div>
+		<h3 class="text-xl text-white font-extrabold mt-4">SHARE</h3>
 		<div class="px-4 py-1 text-center mb-auto">
 			<a id="twitter-share" href="/" class="share-btn">
 				<img src="/social/twitter.png" alt="Twitter" class="w-6" />
