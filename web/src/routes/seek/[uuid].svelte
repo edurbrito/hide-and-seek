@@ -123,8 +123,9 @@
 		let found = 0;
 		for (const hider in hiders) {
 			if (Object.prototype.hasOwnProperty.call(hiders, hider)) {
-				found += hiders[hider].found;
-				let pill = `<div class="rounded-full bg-secondary text-white p-2 m-1 text-xs drop-shadow-md w-fit">${hiders[hider].username}</div>\n`
+				found += hiders[hider].found
+				let opacity = hiders[hider].found ? "" : "opacity-60"
+				let pill = `<div class="rounded-full bg-secondary text-white p-2 m-1 text-xs drop-shadow-md w-fit ${opacity}">${hiders[hider].username}</div>\n`
 				if (hiders[hider].found) {
 					hidersFound += pill
 				} else {
@@ -146,20 +147,21 @@
 
 	$: updateTable(game);
 
-	let shown = false;
+	let shownGameID = false;
+	let shownLink = false;
 </script>
 
-<div class="scrollport w-screen h-screen">
+<div class="scrollport w-full h-full">
 	<div class="child h-full w-full relative flex flex-shrink-0 flex-col bg-primary">
 		<Map {game} {currentPosition} />
 
-		{#if shown}
+		{#if shownGameID}
 			<div
 				id="navbar"
-				class="w-fit h-fit absolute right-0 left-0 m-auto bottom-12 text-xs text-white p-2 bg-primary"
+				class="w-fit h-fit absolute right-0 left-0 m-auto bottom-12 text-xs text-white p-2 bg-primary drop-shadow-lg"
 				style="z-index: 10000002;"
 				on:click={() => {
-					shown = false;
+					shownGameID = false;
 				}}
 			>
 				Copied to clipboard! Share it with your friends
@@ -176,7 +178,10 @@
 					class="text-sm underline"
 					on:click={() => {
 						copyToClipBoard(game.game_id);
-						shown = true;
+						shownGameID = true;
+						setTimeout(() => {
+							shownGameID = false;
+						}, 3000);
 					}}
 					id="game_id"
 				/>
@@ -206,14 +211,17 @@
 		class="child h-full w-full flex flex-shrink-0 sm:p-2 md:p-12 pt-4 flex-col items-center bg-primary text-white"
 		id="hiders-section"
 	>
-		<h2 class="text-2xl text-white font-extrabold mb-2 mt-auto">HIDERS<br><h3 class="text-base text-center">FOUND</h3></h2>
+		<h2 class="text-2xl text-white font-extrabold mb-2 mt-auto">HIDERS</h2>
+		<hr class="w-10/12 mb-4">
+		<h3 class="text-white font-extrabold mb-2 md:mt-auto text-base text-center mt-2">FOUND</h3>
 		<div id="hiders-container-found" class="w-full flex justify-center flex-wrap overflow-y-scroll">
 		</div>
-		<hr class="w-10/12 m-4">
+		<hr class="w-6/12 m-4">
 		<h3 class="text-white font-extrabold mb-2 md:mt-auto text-base text-center mt-2">MISSING</h3>
 		<div id="hiders-container-missing" class="w-full flex justify-center flex-wrap overflow-y-scroll">
 		</div>
-		<h3 class="text-xl text-white font-extrabold mt-4">SHARE</h3>
+		<hr class="w-10/12 mt-auto">
+		<h3 class="text-xl text-white font-extrabold mt-2">SHARE</h3>
 		<div class="px-4 py-1 text-center mb-auto">
 			<a id="twitter-share" href="/" class="share-btn">
 				<img src="/social/twitter.png" alt="Twitter" class="w-6" />
@@ -238,11 +246,27 @@
 			<button
 				on:click={() => {
 					copyToClipBoard(`${$page.url.host}/hide/${game.game_id}`);
+					shownLink = true;
+					setTimeout(() => {
+						shownLink = false;
+					}, 3000);
 				}}
 				class="share-btn"
 			>
 				<img src="/social/link.png" alt="Copy Link" class="w-6" />
 			</button>
 		</div>
+		{#if shownLink}
+			<div
+				id="navbar"
+				class="w-fit h-fit absolute right-0 left-0 m-auto bottom-2 text-xs text-white p-2 bg-primary drop-shadow-lg"
+				style="z-index: 10000002;"
+				on:click={() => {
+					shownLink = false;
+				}}
+			>
+				Copied to clipboard! Share it with your friends
+			</div>
+		{/if}
 	</div>
 </div>

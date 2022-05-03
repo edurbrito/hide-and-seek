@@ -37,7 +37,7 @@
 		/>
 		<button
 			on:click={handleSubmitButtonClick}
-			class="button bg-secondary other-text hover:bg-gray-600 active:bg-gray-700 focus:outline-none"
+			class="button bg-secondary other-text hover:bg-gray-600 active:bg-gray-700 focus:outline-none drop-shadow-lg"
 			type="sumbit"
 			disabled={!(gameid.length === 6)}
 		>
