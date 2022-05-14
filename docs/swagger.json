@@ -1,0 +1,256 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Hide and Seek server.",
+        "version": "1.0.0",
+        "title": "Swagger Hide And Seek"
+    },
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "seek",
+            "description": "Everything about Seeking"
+        },
+        {
+            "name": "hide",
+            "description": "Everything about Hiding"
+        }
+    ],
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "paths": {
+        "/seek": {
+            "post": {
+                "tags": [
+                    "seek"
+                ],
+                "summary": "creates a new game session",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "new game session created",
+                        "schema": {
+                            "$ref": "#/definitions/GameSession"
+                        }
+                    }
+                }
+            }
+        },
+        "/seek/{uuid}": {
+            "get": {
+                "tags": [
+                    "seek"
+                ],
+                "summary": "gets the game session status",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "description": "Game Session UUID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "seeker's latitude",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "seeker's longitude",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfull operation",
+                        "schema": {
+                            "$ref": "#/definitions/GameSession"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID supplied"
+                    },
+                    "404": {
+                        "description": "Game Session not found"
+                    }
+                }
+            }
+        },
+        "/hide/{gameid}": {
+            "get": {
+                "tags": [
+                    "hide"
+                ],
+                "summary": "register for participating in a game session as a hider",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "gameid",
+                        "in": "path",
+                        "description": "first 6 characters of the hex result of sha256(uuid) - will be shared by the seeker",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successfull operation",
+                        "schema": {
+                            "$ref": "#/definitions/Hider"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Game ID supplied"
+                    },
+                    "404": {
+                        "description": "Game Session not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "hide"
+                ],
+                "summary": "broadcasts hider's location",
+                "description": "",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "gameid",
+                        "in": "path",
+                        "description": "first 6 characters of the hex result of sha256(uuid) - will be shared by the seeker",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "uuid",
+                        "in": "query",
+                        "description": "hider's uuid",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "latitude",
+                        "in": "query",
+                        "description": "hider's latitude",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "longitude",
+                        "in": "query",
+                        "description": "hider's longitude",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/Seeker"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid Game ID supplied"
+                    },
+                    "404": {
+                        "description": "Game Session not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "GameSession": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string",
+                    "description": "random identifier UUID"
+                },
+                "gameid": {
+                    "type": "string",
+                    "description": "first 6 characters of the hex result of sha256(uuid)"
+                },
+                "seeker": {
+                    "type": "string",
+                    "description": "seeker random username"
+                },
+                "hiders": {
+                    "type": "array",
+                    "description": "array of hiders",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "username": {
+                                "type": "string",
+                                "description": "hider random username"
+                            },
+                            "latitude": {
+                                "type": "number",
+                                "description": "Represents the hider's latitude if found, else a random latitude within a 500m circle of the original location"
+                            },
+                            "longitude": {
+                                "type": "number",
+                                "description": "Represents the hider's longitude if found, else a random longitude within a 500m circle of the original location"
+                            },
+                            "found": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Hider": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string",
+                    "description": "Hider identifier and used as token authentication when broadcasting the location"
+                },
+                "username" : {
+                    "type": "string",
+                    "description": "hider random username"
+                }
+            }
+        },
+        "Seeker": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "seeker's random username"
+                },
+                "distance": {
+                    "type": "number",
+                    "description": "distance to the seeker in meters"
+                },
+                "found": {
+                    "type": "boolean",
+                    "description": "true if the seeker already found this hider"
+                }
+            }
+        }
+    }
+}

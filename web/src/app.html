@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="description" content="" />
-		<link rel="icon" href="%svelte.assets%/logo.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="manifest" crossorigin="use-credentials" href="manifest.json" />
-		
-		%svelte.head%
-	</head>
-	<body>
-		<div>%svelte.body%</div>
-	</body>
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="description" content="" />
+	<link rel="icon" href="%svelte.assets%/logo.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="manifest" crossorigin="use-credentials" href="manifest.json" />
+	%svelte.head%
+</head>
+
+<body class="w-screen h-screen bg-primary pl-4 pr-4">
+	<div class=" w-full h-full flex flex-col justify-center items-center bg-primary">
+		%svelte.body%
+	</div>
+</body>
+
 </html>
