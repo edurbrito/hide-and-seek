@@ -2,13 +2,21 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from uuid import uuid4
 from hashlib import sha256
+import os
+from dotenv import load_dotenv, find_dotenv
 from utils import random_username, calculate_circle_center, calculate_distance
 from pymongo import MongoClient
 
 app = Flask("backend")
 CORS(app)
-MONGO_CLIENT = MongoClient()
-DB = MONGO_CLIENT.hide_and_seek
+
+load_dotenv(find_dotenv())
+
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
+DATABASE_URL=f"mongodb+srv://utstudent:{DATABASE_PASSWORD}@hide-and-seek.12wrz.mongodb.net/hideAndSeek?retryWrites=true&w=majority"
+
+MONGO_CLIENT = MongoClient(DATABASE_URL)
+DB = MONGO_CLIENT.hideandseek
 
 DISTANCE_THRESHOLD = 50
 

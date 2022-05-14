@@ -1,7 +1,7 @@
 <script lang="ts">
 	const BACKEND = import.meta.env.VITE_BACKEND
 		? import.meta.env.VITE_BACKEND
-		: 'http://localhost:5000';
+		: 'http://127.0.0.1:5000';
 
 	async function seek() {
 		await fetch(`${BACKEND}/seek`, { method: 'POST' })

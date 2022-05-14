@@ -4,7 +4,7 @@
 
 	const BACKEND = import.meta.env.VITE_BACKEND
 		? import.meta.env.VITE_BACKEND
-		: 'http://localhost:5000';
+		: 'http://127.0.0.1:5000';
 
 	const game_id = $page.params.gameid;
 	let hider;
