@@ -50,6 +50,12 @@
 			popupAnchor: [0, -32] // point from which the popup should open relative to the iconAnchor
 		});
 
+		let marker = L.marker(
+			[currentPosition.latitude, currentPosition.longitude]
+			// {icon: seekerIcon}
+		).addTo(map);
+		marker.bindPopup('This is You!');
+
 		for (const hider in hiders) {
 			if (Object.prototype.hasOwnProperty.call(hiders, hider)) {
 				if (!hiders[hider].found) {
@@ -68,12 +74,6 @@
 				}
 			}
 		}
-
-		let marker = L.marker(
-			[currentPosition.latitude, currentPosition.longitude]
-			// {icon: seekerIcon}
-		).addTo(map);
-		marker.bindPopup('This is You!');
 	});
 
 	function stringToColour(string) {
@@ -90,4 +90,4 @@
 	/>
 </svelte:head>
 
-<div id="map" class="w-screen" style="height: 95vh;" />
+<div id="map" class="w-full h-full" style="z-index: 10000;"/>
