@@ -11,12 +11,16 @@
 				window.location.href = `/seek/${game.uuid}/`;
 			});
 	}
+
+	function hide() {
+		window.location.href = "/hide"
+	}
 </script>
 
 <div class="w-full h-full flex flex-col items-center justify-center">
 	<h1 class="title mt-auto">Hide & Seek</h1>
 	<div class="mt-5 flex actions-container">
-		<a href="/hide" class="link bg-secondary other-text hover:bg-gray-600 active:bg-gray-700 focus:outline-none drop-shadow-lg" type="button">Hide</a>
+		<button class="button bg-secondary other-text hover:bg-gray-600 active:bg-gray-700 focus:outline-none drop-shadow-lg" type="button" on:click={hide}>Hide</button>
 		<button class="button bg-secondary other-text hover:bg-gray-600 active:bg-gray-700 focus:outline-none drop-shadow-lg" type="button" on:click={seek}>Seek</button>
 	</div>
 	<div class="text-xs mt-auto w-full flex flex-row mb-4 items-center justify-center">
