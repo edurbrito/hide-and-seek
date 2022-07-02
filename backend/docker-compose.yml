@@ -1,0 +1,66 @@
+version: '3.1'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: hide-and-seek
+      MONGO_INITDB_DATABASE: hideandseek
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - backend
+
+  hide-and-seek:
+    image: hide-and-seek-flask
+    restart: always
+    ports:
+      - 80
+    environment:
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: hide-and-seek
+      DATABASE_URL: mongodb://root:hide-and-seek@mongo:27017/hideandseek?retryWrites=true&w=majority&authSource=admin
+    depends_on:
+      - mongo
+    networks:
+      - backend
+    deploy:
+      replicas: 3
+
+  nginx:
+    image: nginx
+    restart: always
+    ports: 
+      - 80:80
+      - 443:443
+    networks: 
+      - backend
+    depends_on: 
+      - hide-and-seek
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d
+      - ./certbot/www/:/var/www/certbot
+      - ./certbot/conf/:/etc/nginx/ssl
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www/:/var/www/certbot
+      - ./certbot/conf/:/etc/letsencrypt
+    depends_on:
+      - nginx
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mongodbdata:
+    driver: local

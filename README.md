@@ -22,6 +22,12 @@ Group Iron Man <img src="web/static/logo.png" alt="Group Iron Man" style="height
 
 --------------------------------------------
 
+### Report
+
+[Wanna read it?](docs/hide-and-seek-report.pdf)
+
+--------------------------------------------
+
 ### Description
 
 > Case 4
